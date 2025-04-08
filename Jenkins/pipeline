@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/your-username/your-repo.git'
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    sh 'docker build -t vishruth04/apache:latest ./docker'
+                    sh 'docker build -t vishruth04/weblogic:latest ./docker'
+                    sh 'docker build -t vishruth04/mysql:latest ./docker'
+                }
+            }
+        }
+        stage('Push Docker Images') {
+            steps {
+                script {
+                    sh 'docker push vishruth04/apache:latest'
+                    sh 'docker push vishruth04/weblogic:latest'
+                    sh 'docker push vishruth04/mysql:latest'
+                }
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                ansiblePlaybook(playbook: 'ansible/deploy_k8s.yml', inventory: 'localhost,')
+            }
+        }
+    }
+}

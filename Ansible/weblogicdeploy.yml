@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weblogic-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: weblogic
+  template:
+    metadata:
+      labels:
+        app: weblogic
+    spec:
+      serviceAccountName: weblogic-sa
+      containers:
+        - name: weblogic
+          image: vishruth04/weblogic:latest  # Replace with your WebLogic image
+          ports:
+            - containerPort: 7001
