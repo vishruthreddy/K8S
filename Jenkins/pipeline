@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_USER = 'vishruth04'
         DOCKER_TAG = 'latest'
+        IMAGE_NAME = 'LoginWebApp'
     }
 
     stages {
@@ -13,29 +14,22 @@ pipeline {
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Pull Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKERHUB_USER}/apache:${DOCKER_TAG} ./docker/apache"
-                    sh "docker build -t ${DOCKERHUB_USER}/weblogic:${DOCKER_TAG} ./docker/weblogic"
-                    sh "docker build -t ${DOCKERHUB_USER}/mysql:${DOCKER_TAG} ./docker/mysql"
-                }
-            }
-        }
-
-        stage('Push Docker Images') {
-            steps {
-                script {
-                    sh "docker push ${DOCKERHUB_USER}/apache:${DOCKER_TAG}"
-                    sh "docker push ${DOCKERHUB_USER}/weblogic:${DOCKER_TAG}"
-                    sh "docker push ${DOCKERHUB_USER}/mysql:${DOCKER_TAG}"
+                    // Pull the Docker image from DockerHub
+                    sh "docker pull ${DOCKERHUB_USER}/${IMAGE_NAME}:${DOCKER_TAG}"
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                ansiblePlaybook(playbook: 'ansible/deploy_k8s.yml', inventory: 'localhost,')
+                script {
+                    // Update the Kubernetes deployment YAML file (you should have this in your repository)
+                    // The image used here should be the Docker image with the LoginWebApp.war
+                    sh "kubectl apply -f k8s/deployment.yaml"
+                }
             }
         }
     }
