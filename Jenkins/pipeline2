@@ -21,7 +21,7 @@ pipeline {
                     sh 'which kubectl'
                     sh 'kubectl version --client'
                     sh 'kubectl config current-context'
-                    sh 'kubectl get nodes'
+                   
                 }
             }
         }
