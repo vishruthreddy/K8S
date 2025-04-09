@@ -2,36 +2,25 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'vishruth04'
-        DOCKER_TAG = 'latest'
-        IMAGE_NAME = 'loginwebapp'
-        ANSIBLE_INVENTORY = 'inventory.ini'  // Update with your actual inventory file path
+        ANSIBLE_HOST_KEY_CHECKING = 'False'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/vishruthreddy/K8S.git'
+                git branch: 'main', 
+                  
+                    url: 'https://github.com/https://github.com/vishruthreddy/K8S.git' // Replace with your repository URL
             }
         }
 
-        stage('Pull Docker Image') {
+        stage("Execute Ansible") {
             steps {
-                script {
-                    // Pull the Docker image from DockerHub
-                    sh "docker pull ${DOCKERHUB_USER}/${IMAGE_NAME}:${DOCKER_TAG}"
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes using Ansible') {
-            steps {
-                script {
-                    // Run the Ansible playbook to apply the Kubernetes YAML files using the inventory
-                    sh """
-                        ansible-playbook -i ${ANSIBLE_INVENTORY} k8s/deploy_apache_rbac.yaml
-                    """
-                }
+                ansiblePlaybook credentialsId: 'Ansible',
+                                 disableHostKeyChecking: true,
+                                 installation: 'Ansible',
+                                 inventory: 'inventory.ini', // Replace with your inventory file
+                                 playbook: 'apache_rbac.yml' // Replace with your playbook file
             }
         }
     }
