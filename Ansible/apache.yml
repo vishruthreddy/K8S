@@ -4,14 +4,14 @@
   become: yes  # Run tasks as root on the Kubernetes master node
   tasks:
     - name: Create ServiceAccount for Apache
-      kubernetes:
+      kubernetes.core.k8s:
         api_version: v1
         kind: ServiceAccount
         name: apache-sa
         namespace: default
 
     - name: Create Role for Apache
-      kubernetes:
+      kubernetes.core.k8s:
         api_version: rbac.authorization.k8s.io/v1
         kind: Role
         name: apache-role
@@ -22,7 +22,7 @@
             verbs: ["get", "list", "watch"]
 
     - name: Create RoleBinding for Apache
-      kubernetes:
+      kubernetes.core.k8s:
         api_version: rbac.authorization.k8s.io/v1
         kind: RoleBinding
         name: apache-rolebinding
@@ -37,7 +37,7 @@
           apiGroup: rbac.authorization.k8s.io
 
     - name: Create ClusterRole for Apache
-      kubernetes:
+      kubernetes.core.k8s:
         api_version: rbac.authorization.k8s.io/v1
         kind: ClusterRole
         name: apache-clusterrole
@@ -47,7 +47,7 @@
             verbs: ["get", "list", "watch"]
 
     - name: Create ClusterRoleBinding for Apache
-      kubernetes:
+      kubernetes.core.k8s:
         api_version: rbac.authorization.k8s.io/v1
         kind: ClusterRoleBinding
         name: apache-clusterrolebinding
