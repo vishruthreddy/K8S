@@ -20,7 +20,7 @@ pipeline {
                                  disableHostKeyChecking: true,
                                  installation: 'Ansible',
                                  inventory: 'inventory.ini', // Replace with your inventory file
-                                 playbook: 'apache_rbac.yml' // Replace with your playbook file
+                                 playbook: 'apache.yml' // Replace with your playbook file
             }
         }
     }
