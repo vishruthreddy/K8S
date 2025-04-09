@@ -4,7 +4,7 @@ pipeline {
     environment {
         GIT_REPO = 'https://github.com/vishruthreddy/K8S.git'
         BRANCH = 'main'
-        FILE_PATH = 'K8S/Ansible/apache.yml'
+        FILE_PATH = 'Ansible/apache.yml'
         KUBECONFIG = '/var/lib/jenkins/.kube/config' // This should exist and be readable
     }
 
