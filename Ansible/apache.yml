@@ -1,6 +1,6 @@
 ---
 - name: Create Kubernetes RBAC Resources for Apache
-  hosts: k8s-master  # Specify your target host(s) here
+  hosts: eks-master  # Specify your target host(s) here
   become: yes  # Run tasks as root on the Kubernetes master node
   tasks:
     - name: Create ServiceAccount for Apache
