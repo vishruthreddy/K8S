@@ -1,10 +1,15 @@
 pipeline {
     agent any
 
+    tools {
+        kubectl 'kubectl-1.28' // Make sure this matches the name you set in "Global Tool Configuration"
+    }
+
     environment {
         GIT_REPO = 'https://github.com/vishruthreddy/K8S.git'
         BRANCH = 'main'
         FILE_PATH = 'K8S/Ansible/apache.yml'
+        KUBECONFIG = '/var/lib/jenkins/.kube/config' // Ensure this file exists and is readable by Jenkins
     }
 
     stages {
@@ -14,10 +19,17 @@ pipeline {
             }
         }
 
+        stage('Check kubectl & Cluster Access') {
+            steps {
+                sh 'kubectl version --client'
+                sh 'kubectl config current-context'
+                sh 'kubectl get nodes'
+            }
+        }
+
         stage('Apply Apache RBAC Configuration') {
             steps {
                 script {
-                    // Apply RBAC manifest using kubectl
                     sh "kubectl apply -f ${FILE_PATH}"
                 }
             }
@@ -26,10 +38,10 @@ pipeline {
 
     post {
         success {
-            echo "Apache RBAC configuration applied successfully."
+            echo "✅ Apache RBAC configuration applied successfully."
         }
         failure {
-            echo "Failed to apply RBAC configuration."
+            echo "❌ Failed to apply Apache RBAC configuration. Please check kubectl setup or kubeconfig."
         }
     }
 }
