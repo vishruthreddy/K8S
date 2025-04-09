@@ -1,52 +1,72 @@
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: apache-sa
-  namespace: default
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: apache-role
-  namespace: default
-rules:
-  - apiGroups: [""]
-    resources: ["pods", "services", "endpoints"]
-    verbs: ["get", "list", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: apache-rolebinding
-  namespace: default
-subjects:
-  - kind: ServiceAccount
-    name: apache-sa
-    namespace: default
-roleRef:
-  kind: Role
-  name: apache-role
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: apache-clusterrole
-rules:
-  - apiGroups: [""]
-    resources: ["nodes", "pods", "services"]
-    verbs: ["get", "list", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: apache-clusterrolebinding
-subjects:
-  - kind: ServiceAccount
-    name: apache-sa
-    namespace: default
-roleRef:
-  kind: ClusterRole
-  name: apache-clusterrole
-  apiGroup: rbac.authorization.k8s.io
+- name: Create Kubernetes RBAC Resources for Apache
+  hosts: k8s-master  # Specify your target host(s) here
+  become: yes  # Run tasks as root on the Kubernetes master node
+  tasks:
+    - name: Create ServiceAccount for Apache
+      kubernetes:
+        api_version: v1
+        kind: ServiceAccount
+        name: apache-sa
+        namespace: default
+
+    - name: Create Role for Apache
+      kubernetes:
+        api_version: rbac.authorization.k8s.io/v1
+        kind: Role
+        name: apache-role
+        namespace: default
+        rules:
+          - apiGroups: [""]
+            resources: ["pods", "services", "endpoints"]
+            verbs: ["get", "list", "watch"]
+
+    - name: Create RoleBinding for Apache
+      kubernetes:
+        api_version: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        name: apache-rolebinding
+        namespace: default
+        subjects:
+          - kind: ServiceAccount
+            name: apache-sa
+            namespace: default
+        role_ref:
+          kind: Role
+          name: apache-role
+          apiGroup: rbac.authorization.k8s.io
+
+    - name: Create ClusterRole for Apache
+      kubernetes:
+        api_version: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        name: apache-clusterrole
+        rules:
+          - apiGroups: [""]
+            resources: ["nodes", "pods", "services"]
+            verbs: ["get", "list", "watch"]
+
+    - name: Create ClusterRoleBinding for Apache
+      kubernetes:
+        api_version: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        name: apache-clusterrolebinding
+        subjects:
+          - kind: ServiceAccount
+            name: apache-sa
+            namespace: default
+        role_ref:
+          kind: ClusterRole
+          name: apache-clusterrole
+          apiGroup: rbac.authorization.k8s.io
+
+  handlers:
+    - name: Restart Kubernetes services
+      systemd:
+        name: kubelet
+        state: restarted
+
+    - name: Reload Kubernetes API server
+      systemd:
+        name: kube-apiserver
+        state: reloaded
