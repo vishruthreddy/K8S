@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_USER = 'vishruth04'
         DOCKER_TAG = 'latest'
-        IMAGE_NAME = 'LoginWebApp'
+        IMAGE_NAME = 'loginwebapp'
         ANSIBLE_INVENTORY = 'inventory.ini'  // Update with your actual inventory file path
     }
 
