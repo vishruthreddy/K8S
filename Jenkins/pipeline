@@ -1,29 +1,38 @@
 pipeline {
     agent any
+
+    environment {
+        DOCKERHUB_USER = 'vishruth04'
+        DOCKER_TAG = 'latest'
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/vishruthreddy/K8S.git'
+                git branch: 'main', url: 'https://github.com/vishruthreddy/K8S.git'
             }
         }
+
         stage('Build Docker Images') {
             steps {
                 script {
-                    sh 'docker build -t vishruth04/apache:latest ./docker'
-                    sh 'docker build -t vishruth04/weblogic:latest ./docker'
-                    sh 'docker build -t vishruth04/mysql:latest ./docker'
+                    sh "docker build -t ${DOCKERHUB_USER}/apache:${DOCKER_TAG} ./docker/apache"
+                    sh "docker build -t ${DOCKERHUB_USER}/weblogic:${DOCKER_TAG} ./docker/weblogic"
+                    sh "docker build -t ${DOCKERHUB_USER}/mysql:${DOCKER_TAG} ./docker/mysql"
                 }
             }
         }
+
         stage('Push Docker Images') {
             steps {
                 script {
-                    sh 'docker push vishruth04/apache:latest'
-                    sh 'docker push vishruth04/weblogic:latest'
-                    sh 'docker push vishruth04/mysql:latest'
+                    sh "docker push ${DOCKERHUB_USER}/apache:${DOCKER_TAG}"
+                    sh "docker push ${DOCKERHUB_USER}/weblogic:${DOCKER_TAG}"
+                    sh "docker push ${DOCKERHUB_USER}/mysql:${DOCKER_TAG}"
                 }
             }
         }
+
         stage('Deploy to Kubernetes') {
             steps {
                 ansiblePlaybook(playbook: 'ansible/deploy_k8s.yml', inventory: 'localhost,')
