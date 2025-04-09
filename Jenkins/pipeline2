@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    environment {
+        GIT_REPO = 'https://github.com/vishruthreddy/K8S.git'
+        BRANCH = 'main'
+        FILE_PATH = 'K8S/Ansible/apache.yml'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: "${BRANCH}", url: "${GIT_REPO}"
+            }
+        }
+
+        stage('Apply Apache RBAC Configuration') {
+            steps {
+                script {
+                    // Apply RBAC manifest using kubectl
+                    sh "kubectl apply -f ${FILE_PATH}"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Apache RBAC configuration applied successfully."
+        }
+        failure {
+            echo "Failed to apply RBAC configuration."
+        }
+    }
+}
