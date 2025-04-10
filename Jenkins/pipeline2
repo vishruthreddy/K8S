@@ -9,18 +9,19 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main', 
-                  
-                    url: 'https://github.com/vishruthreddy/K8S.git' // Replace with your repository URL
+                    url: 'https://github.com/vishruthreddy/K8S.git'
             }
         }
 
-        stage("Execute Ansible") {
+        stage('Run Ansible Playbook') {
             steps {
-                ansiblePlaybook credentialsId: 'Ansible',
-                                 disableHostKeyChecking: true,
-                                 installation: 'Ansible',
-                                 inventory: 'inventory.ini', // Replace with your inventory file
-                                 playbook: 'Ansible/apache.yml' // Replace with your playbook file
+                ansiblePlaybook(
+                    playbook: 'Ansible/apache.yml',          // Ensure this path exists in your Git repo
+                    inventory: 'inventory.ini',              // This should be in the repo or workspace
+                    credentialsId: 'Ansible',                // This should match your Jenkins SSH credential ID
+                    installation: 'Ansible',                 // Name of your Ansible installation in Jenkins tools config
+                    disableHostKeyChecking: true
+                )
             }
         }
     }
