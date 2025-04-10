@@ -13,15 +13,14 @@ pipeline {
             }
         }
 
-        stage('Run Ansible Playbook') {
+        stage("Execute Ansible") {
             steps {
-                ansiblePlaybook(
-                    playbook: 'Ansible/apache.yml',          // Ensure this path exists in your Git repo
-                    inventory: 'inventory.ini',              // This should be in the repo or workspace
-                    credentialsId: 'Ansible',                // This should match your Jenkins SSH credential ID
-                    installation: 'Ansible',                 // Name of your Ansible installation in Jenkins tools config
-                    disableHostKeyChecking: true
-                )
+                sh '''
+                    ansible-playbook Ansible/apache.yml \
+                        -i inventory.ini \
+                        --private-key ~/.ssh/ansible_id_rsa \
+                        -u ubuntu
+                '''
             }
         }
     }
