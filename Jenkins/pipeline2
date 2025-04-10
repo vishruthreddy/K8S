@@ -9,18 +9,17 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main', 
-                    url: 'https://github.com/vishruthreddy/K8S.git'
+                    url: 'https://github.com/vishruthreddy/K8S.git'  // Replace with your repository URL
             }
         }
 
         stage("Execute Ansible") {
             steps {
-                sh '''
-                    ansible-playbook Ansible/apache.yml \
-                        -i inventory.ini \
-                        --private-key ~/.ssh/ansible_id_rsa \
-                        -u ubuntu
-                '''
+                ansiblePlaybook credentialsId: 'ansible2',  // Updated credentials ID
+                                 disableHostKeyChecking: true,
+                                 installation: 'Ansible',
+                                 inventory: 'inventory.ini',  // Replace with your inventory file
+                                 playbook: 'Ansible/apache.yml'  // Replace with your playbook file
             }
         }
     }
