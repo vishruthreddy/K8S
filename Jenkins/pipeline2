@@ -15,7 +15,7 @@ pipeline {
 
         stage("Execute Ansible") {
             steps {
-                ansiblePlaybook credentialsId: 'ansible2',  // Updated credentials ID
+                ansiblePlaybook credentialsId: 'ansible',  // Updated credentials ID
                                  disableHostKeyChecking: true,
                                  installation: 'Ansible',
                                  inventory: 'inventory.ini',  // Replace with your inventory file
