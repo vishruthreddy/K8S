@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loginwebapp
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: loginwebapp
+  template:
+    metadata:
+      labels:
+        app: loginwebapp
+    spec:
+      containers:
+      - name: loginwebapp
+        image: yourdockerhubuser/loginwebapp:latest
+        ports:
+        - containerPort: 8080
