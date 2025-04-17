@@ -1,0 +1,38 @@
+- name: Deploy LoginWebApp to EKS
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Apply ServiceAccount
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'templates/serviceaccount.yml.j2') }}"
+        state: present
+
+    - name: Apply Role
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'templates/role.yml.j2') }}"
+        state: present
+
+    - name: Apply RoleBinding
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'templates/rolebinding.yml.j2') }}"
+        state: present
+
+    - name: Apply ClusterRole
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'templates/clusterrole.yml.j2') }}"
+        state: present
+
+    - name: Apply ClusterRoleBinding
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'templates/clusterrolebinding.yml.j2') }}"
+        state: present
+
+    - name: Deploy App
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'templates/app-deployment.yml.j2') }}"
+        state: present
+
+    - name: Create Service
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'templates/app-service.yml.j2') }}"
+        state: present
