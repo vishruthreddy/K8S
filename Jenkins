@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "vishruth04/loginwebapp:latest"
+    }
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/vishruthreddy28/3-tier-k8s-automation.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('app') {
+                    sh 'docker build -t $IMAGE_NAME .'
+                }
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                withDockerRegistry([credentialsId: 'dockerhub-creds', url: '']) {
+                    sh 'docker push $IMAGE_NAME'
+                }
+            }
+        }
+
+        stage('Run Ansible') {
+            steps {
+                sh 'ansible-playbook ansible/deploy.yml'
+            }
+        }
+    }
+}
